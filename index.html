@@ -278,12 +278,25 @@
                   </sc-for>
                 </div>
               </div>
-              <sc-if value="{{ tieneTarjeta }}" hint-placeholder-val="{{ false }}">
-                <label style="display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; background:#F4F4F2; border-radius:8px; padding:12px 14px; min-height:48px">
+              <div style="display:flex; flex-direction:column; gap:10px; background:#F4F4F2; border-radius:8px; padding:12px 14px">
+                <label style="display:flex; align-items:center; gap:10px; font-size:15px; font-weight:700; min-height:28px">
                   <input type="checkbox" checked="{{ conTarjeta }}" onChange="{{ toggleTarjeta }}" style="width:20px; height:20px; accent-color:#D9342C">
                   Pagar con mi tarjeta Mocka
                 </label>
-              </sc-if>
+                <sc-if value="{{ conTarjeta }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1fr); gap:8px">
+                    <label style="display:flex; flex-direction:column; gap:4px">
+                      <span style="font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase">Código</span>
+                      <input value="{{ tjCodigo }}" onChange="{{ setTjCodigo }}" placeholder="MK-7K3Q9" autocapitalize="characters" autocomplete="off" style="font-size:16px; padding:10px 12px; border:2px solid #111111; border-radius:8px; min-height:46px; text-transform:uppercase; width:100%; background:#FFFFFF">
+                    </label>
+                    <label style="display:flex; flex-direction:column; gap:4px">
+                      <span style="font-size:12px; font-weight:800; letter-spacing:.06em; text-transform:uppercase">Últimos 4 de tu WhatsApp</span>
+                      <input value="{{ tj4 }}" onChange="{{ setTj4 }}" placeholder="1234" inputmode="numeric" maxlength="4" autocomplete="off" style="font-size:16px; padding:10px 12px; border:2px solid #111111; border-radius:8px; min-height:46px; width:100%; background:#FFFFFF">
+                    </label>
+                  </div>
+                  <p style="margin:0; font-size:13px; font-weight:500; line-height:1.4; color:#4A4A4A">El código está en tu tarjeta, debajo del QR. Apartamos el monto y se descuenta solo cuando caja confirma tu pedido.</p>
+                </sc-if>
+              </div>
               <label style="display:flex; flex-direction:column; gap:6px">
                 <span style="font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase">Nota (opcional)</span>
                 <textarea value="{{ nota }}" onChange="{{ setNota }}" rows="2" placeholder="Ej: sin cebolla, papas bien doradas" style="font-size:16px; padding:12px 14px; border:2px solid #111111; border-radius:8px; resize:vertical"></textarea>
@@ -298,8 +311,17 @@
               <span style="font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:.06em">Total</span>
               <span style="font-size:32px; font-weight:900; color:#D9342C; letter-spacing:-.02em">{{ total }}</span>
             </div>
-            <a href="{{ waPedido }}" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:16px; border-radius:8px; min-height:52px; box-shadow:4px 4px 0 #111111">Enviar pedido por WhatsApp</a>
-            <p style="margin:0; font-size:13px; font-weight:500; color:#4A4A4A; text-align:center">Se abre WhatsApp con tu pedido listo. Te confirmamos disponibilidad y tiempo.</p>
+            <sc-if value="{{ tjError }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0; font-size:14px; font-weight:700; line-height:1.4; color:#D9342C; background:#FDECEA; border-radius:8px; padding:10px 12px">{{ tjErr }}</p>
+            </sc-if>
+            <sc-if value="{{ sinTarjetaPago }}" hint-placeholder-val="{{ true }}">
+              <a href="{{ waPedido }}" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:16px; border-radius:8px; min-height:52px; box-shadow:4px 4px 0 #111111">Enviar pedido por WhatsApp</a>
+              <p style="margin:0; font-size:13px; font-weight:500; color:#4A4A4A; text-align:center">Se abre WhatsApp con tu pedido listo. Te confirmamos disponibilidad y tiempo.</p>
+            </sc-if>
+            <sc-if value="{{ conTarjeta }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ enviarTarjeta }}" disabled="{{ tjBusy }}" style="display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; border:0; padding:16px; border-radius:8px; min-height:52px; box-shadow:4px 4px 0 #111111">{{ tjBoton }}</button>
+              <p style="margin:0; font-size:13px; font-weight:500; color:#4A4A4A; text-align:center">Revisamos tu saldo, apartamos el monto y se abre WhatsApp con tu pedido.</p>
+            </sc-if>
           </div>
         </sc-if>
       </aside>
@@ -328,14 +350,51 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;mostrarFotos&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Menú&quot;},&quot;whatsapp&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;593998475412&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pedidos&quot;},&quot;tarjetaUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;tarjeta.html&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Pedidos&quot;}}">
 class Component extends DCLogic {
-  state = { carrito: {}, pedidoAbierto: false, tarjetaAbierta: false, nombre: '', modo: 'Para llevar', nota: '', conTarjeta: false, tieneTarjeta: false };
+  state = { carrito: {}, pedidoAbierto: false, tarjetaAbierta: false, nombre: '', modo: 'Para llevar', nota: '', conTarjeta: false, tieneTarjeta: false, tjCodigo: '', tj4: '', tjErr: '', tjBusy: false };
+
+  get sbUrl() { return String(this.props.supabaseUrl || 'https://tcvffnaqfavhhoijghbz.supabase.co').replace(/\/+$/, ''); }
+  get sbKey() { return String(this.props.supabaseKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjdmZmbmFxZmF2aGhvaWpnaGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxODYwMDIsImV4cCI6MjEwNTc2MjAwMn0.s973uetbiqWyuUtrtgA3RtXkLEMn2g0sCkkCzT7QiDk'); }
+
+  async _reservar(args) {
+    if (/[?&]demo=1/.test(location.search)) {
+      await new Promise(r => setTimeout(r, 400));
+      return args.p_tel4 === '0000' ? { error: 'El código o los 4 números no coinciden.' } : { id: 101, codigo: String(args.p_codigo).toUpperCase(), monto: args.p_monto };
+    }
+    const res = await fetch(this.sbUrl + '/rest/v1/rpc/mb_reservar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: this.sbKey, Authorization: 'Bearer ' + this.sbKey },
+      body: JSON.stringify(args)
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error((data && data.message) || 'No pudimos revisar tu tarjeta.');
+    return data;
+  }
+
+  enviarConTarjeta = async (total, lineasTxt, msgSin) => {
+    const s = this.state;
+    const codigo = s.tjCodigo.trim().toUpperCase();
+    if (!/^MK-?[A-Z0-9]{5}$/.test(codigo.replace(/\s/g, ''))) return this.setState({ tjErr: 'Escribe el código de tu tarjeta (ej: MK-7K3Q9).' });
+    if (!/^[0-9]{4}$/.test(s.tj4)) return this.setState({ tjErr: 'Escribe los últimos 4 números de tu WhatsApp.' });
+    this.setState({ tjBusy: true, tjErr: '' });
+    try {
+      const r = await this._reservar({ p_codigo: codigo, p_tel4: s.tj4, p_monto: Math.round(total * 100) / 100, p_detalle: lineasTxt, p_cliente: s.nombre || '', p_modo: s.modo || '' });
+      if (!r || r.error) { this.setState({ tjBusy: false, tjErr: (r && r.error) || 'No pudimos revisar tu tarjeta.' }); return; }
+      try { localStorage.setItem('mk_tarjeta_codigo', r.codigo || codigo); } catch (e) {}
+      this.setState({ tjBusy: false });
+      location.href = msgSin('Pago con mi tarjeta Mocka ' + (r.codigo || codigo) + ' · Reserva #' + r.id + ' (se descuenta al confirmar)');
+    } catch (e) {
+      this.setState({ tjBusy: false, tjErr: /fetch|network|load failed/i.test(e.message) ? 'Sin conexión. Revisa tu internet e intenta de nuevo.' : e.message });
+    }
+  };
 
   componentDidMount() {
     let carrito = {}, tiene = false, extra = {};
     try { carrito = JSON.parse(localStorage.getItem('mk_pedido') || '{}') || {}; } catch (e) {}
     try { extra = JSON.parse(localStorage.getItem('mk_pedido_datos') || '{}') || {}; } catch (e) {}
     try { tiene = /^[0-9a-f-]{36}$/i.test(localStorage.getItem('mk_tarjeta_token') || ''); } catch (e) {}
-    this.setState({ carrito, tieneTarjeta: tiene, nombre: extra.nombre || '', modo: extra.modo || 'Para llevar' });
+    let cod = '';
+    try { cod = localStorage.getItem('mk_tarjeta_codigo') || ''; } catch (e) {}
+    this.setState({ carrito, tieneTarjeta: tiene, tjCodigo: cod, nombre: extra.nombre || '', modo: extra.modo || 'Para llevar' });
   }
 
   guardar = (carrito) => {
@@ -523,9 +582,11 @@ class Component extends DCLogic {
       return { n: x.n, det: (x.l ? x.l + ' · ' : '') + $(x.v) + ' c/u  =  ' + $(q * x.v), q, inc: () => this.sumar(k, 1), dec: () => this.sumar(k, -1), txt: q + ' x ' + x.n + (x.l ? ' (' + x.l + ')' : '') + ' — ' + $(q * x.v) };
     });
 
-    const extra = [s.nombre ? 'Nombre: ' + s.nombre : '', s.modo, (s.tieneTarjeta && s.conTarjeta) ? 'Pago con mi tarjeta Mocka' : '', s.nota ? 'Nota: ' + s.nota : ''].filter(Boolean);
-    const msg = ['Hola Mocka, quiero hacer un pedido:', '', ...lineas.map(l => '• ' + l.txt), '', 'Total: ' + $(total), ...extra].join('\n');
+    const armar = (pago) => ['Hola Mocka, quiero hacer un pedido:', '', ...lineas.map(l => '• ' + l.txt), '', 'Total: ' + $(total),
+      ...[s.nombre ? 'Nombre: ' + s.nombre : '', s.modo, pago || '', s.nota ? 'Nota: ' + s.nota : ''].filter(Boolean)].join('\n');
+    const msg = armar('');
     const waLink = (t) => 'https://wa.me/' + wa + '?text=' + encodeURIComponent(t);
+    const detalleRes = lineas.map(l => l.txt).join('\n') + (s.nota ? '\nNota: ' + s.nota : '');
 
     return {
       cats: catsV, destacados,
@@ -543,7 +604,13 @@ class Component extends DCLogic {
       setNota: (e) => this.setState({ nota: e.target.value }),
       modos: ['Para llevar', 'Servir aquí'].map(l => ({ l, on: s.modo === l, off: s.modo !== l, set: () => this.guardarDatos({ modo: l }) })),
       tieneTarjeta: s.tieneTarjeta, conTarjeta: s.conTarjeta,
-      toggleTarjeta: () => this.setState({ conTarjeta: !s.conTarjeta }),
+      toggleTarjeta: () => this.setState({ conTarjeta: !s.conTarjeta, tjErr: '' }),
+      sinTarjetaPago: !s.conTarjeta,
+      tjCodigo: s.tjCodigo, tj4: s.tj4, tjErr: s.tjErr, tjError: !!s.tjErr, tjBusy: s.tjBusy,
+      setTjCodigo: (e) => this.setState({ tjCodigo: e.target.value.toUpperCase(), tjErr: '' }),
+      setTj4: (e) => this.setState({ tj4: e.target.value.replace(/[^0-9]/g, '').slice(0, 4), tjErr: '' }),
+      tjBoton: s.tjBusy ? 'Revisando tu saldo…' : 'Pagar con tarjeta y enviar',
+      enviarTarjeta: () => { if (!s.tjBusy) this.enviarConTarjeta(total, detalleRes, (pago) => waLink(armar(pago))); },
       vaciar: () => this.guardar({}),
       waPedido: waLink(msg),
       waHola: waLink('Hola Mocka, tengo una consulta.'),
