@@ -340,7 +340,7 @@
           <p style="margin:0; font-size:16px; font-weight:500; line-height:1.45"><strong>2.</strong> Te enviamos por WhatsApp el enlace a tu tarjeta con tu QR.</p>
           <p style="margin:0; font-size:16px; font-weight:500; line-height:1.45"><strong>3.</strong> Muestra el QR al pagar. Tu saldo dura 12 meses desde tu última compra.</p>
         </div>
-        <a href="{{ waTarjeta }}" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:15px; border-radius:8px; min-height:50px">Quiero mi tarjeta</a>
+        <a href="{{ tarjetaPlanes }}" style="display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:15px; border-radius:8px; min-height:50px">Quiero mi tarjeta</a>
         <p style="margin:0; font-size:13px; font-weight:500; color:#4A4A4A; text-align:center">¿Ya la tienes? Abre el enlace que te enviamos por WhatsApp una vez y quedará guardada en este celular.</p>
       </div>
     </div>
@@ -614,7 +614,7 @@ class Component extends DCLogic {
       vaciar: () => this.guardar({}),
       waPedido: waLink(msg),
       waHola: waLink('Hola Mocka, tengo una consulta.'),
-      waTarjeta: waLink('Hola Mocka, quiero la tarjeta de $100 con $150 de saldo.')
+      tarjetaPlanes: tarjetaUrl
     };
   }
 }
