@@ -596,7 +596,11 @@ class Component extends DCLogic {
       pedidoAbierto: s.pedidoAbierto, tarjetaAbierta: s.tarjetaAbierta,
       abrirPedido: () => this.setState({ pedidoAbierto: true, tarjetaAbierta: false }),
       cerrarPedido: () => this.setState({ pedidoAbierto: false }),
-      abrirTarjeta: () => { if (s.tieneTarjeta) { location.href = tarjetaUrl; } else { this.setState({ tarjetaAbierta: true, pedidoAbierto: false }); } },
+      abrirTarjeta: () => {
+        let t = '';
+        try { t = localStorage.getItem('mk_tarjeta_token') || ''; } catch (e) {}
+        location.href = tarjetaUrl + (/^[0-9a-f-]{36}$/i.test(t) ? '?t=' + t : '');
+      },
       cerrarTarjeta: () => this.setState({ tarjetaAbierta: false }),
       tarjetaCta: s.tieneTarjeta ? 'Ver mi saldo' : 'Quiero mi tarjeta',
       nombre: s.nombre, nota: s.nota,
