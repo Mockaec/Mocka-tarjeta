@@ -95,6 +95,28 @@
 
     <sc-if value="{{ vHome }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex; flex-direction:column; gap:14px">
+        <sc-if value="{{ haySolicitudes }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FFFFFF; border:2px solid #111111; border-radius:10px; box-shadow:6px 6px 0 #111111; padding:16px; display:flex; flex-direction:column; gap:12px">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
+              <span style="font-size:20px; font-weight:900; letter-spacing:-.01em; text-transform:uppercase">Tarjetas por transferencia</span>
+              <span style="font-size:15px; font-weight:900; background:#111111; color:#FFFFFF; border-radius:999px; padding:4px 12px">{{ nSolicitudes }}</span>
+            </div>
+            <p style="margin:0; font-size:13px; font-weight:600; color:#4A4A4A">Activa solo cuando veas la transferencia en Banco Pichincha (cuenta 6348265100).</p>
+            <sc-for list="{{ solicitudes }}" as="q" hint-placeholder-count="1">
+              <div style="border-top:2px solid #F4F4F2; padding-top:12px; display:flex; flex-direction:column; gap:8px">
+                <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap">
+                  <span style="font-size:17px; font-weight:900">{{ q.nombre }}</span>
+                  <span style="font-size:28px; font-weight:900; color:#D9342C; letter-spacing:-.02em">{{ q.pagaTxt }}</span>
+                </div>
+                <span style="font-size:13px; font-weight:700; color:#4A4A4A">{{ q.meta }}</span>
+                <div style="display:grid; grid-template-columns:minmax(0,2fr) minmax(0,1fr); gap:8px">
+                  <button type="button" onClick="{{ q.activar }}" disabled="{{ q.busy }}" style="font-size:15px; font-weight:900; text-transform:uppercase; background:#D9342C; color:#FFFFFF; border:0; border-radius:8px; padding:12px; min-height:48px">{{ q.activarTxt }}</button>
+                  <button type="button" onClick="{{ q.rechazar }}" disabled="{{ q.busy }}" style="font-size:14px; font-weight:800; text-transform:uppercase; background:#FFFFFF; color:#111111; border:2px solid #111111; border-radius:8px; padding:12px; min-height:48px">Rechazar</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
         <sc-if value="{{ hayReservas }}" hint-placeholder-val="{{ false }}">
           <div style="background:#FFFFFF; border:2px solid #111111; border-radius:10px; box-shadow:6px 6px 0 #D9342C; padding:16px; display:flex; flex-direction:column; gap:12px">
             <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
@@ -368,12 +390,27 @@ class Component extends DCLogic {
     cModo: 'nueva', cNombre: '', cTel: '', cPagado: 100, cMetodo: 'efectivo',
     confirm: null, done: null,
     hoy: null, hoyTodos: false, hoyErr: '',
-    reservas: [], resErr: '', resBusy: null
+    reservas: [], resErr: '', resBusy: null, solicitudes: []
+  };
+
+  _activarSolicitud = async (q, activar) => {
+    if (this.state.resBusy) return;
+    this.setState({ resBusy: 's' + q.id, resErr: '' });
+    try {
+      const r = await this._rpc('mb_solicitud_resolver', { p_id: q.id, p_activar: activar, p_local: this.state.localId });
+      this.setState({ solicitudes: this.state.solicitudes.filter(x => x.id !== q.id), resBusy: null });
+      if (activar && r && r.token) {
+        const nf = await this._rpc('mb_ficha', { p_ref: r.token });
+        this._go('done', { ficha: nf, confirm: null, cModo: r.renovada ? 'recarga' : 'nueva', done: { tipo: 'carga', nueva: !r.renovada, carga: r.carga, pagado: r.pagado } });
+      }
+    } catch (e) { this.setState({ resErr: e.message, resBusy: null }); }
   };
 
   async _cargarReservas() {
     if (this._gone || !this.state.yo || this.state.view !== 'home') return;
     try { const r = await this._rpc('mb_reservas'); if (!this._gone) this.setState({ reservas: r || [], resErr: '' }); }
+    catch (e) { if (!/function|does not exist|schema cache/i.test(e.message)) this.setState({ resErr: e.message }); }
+    try { const q = await this._rpc('mb_solicitudes'); if (!this._gone) this.setState({ solicitudes: q || [] }); }
     catch (e) { if (!/function|does not exist|schema cache/i.test(e.message)) this.setState({ resErr: e.message }); }
   }
 
@@ -683,6 +720,16 @@ class Component extends DCLogic {
       mb_buscar: () => [{ token: tok, codigo: 'MK-7K3Q9', nombre: D.nombre || 'Ana Torres', telefono: D.tel || '593991234567', saldo: D.saldo }],
       mb_ficha: ficha,
       mb_reservas: () => (D.res || (D.res = [{ id: 101, monto: 6.5, detalle: '1 x Pura Vida — $3.75\n1 x Fresco y natural — $2.75', cliente: 'Ana', modo: 'Para llevar', creado: new Date(Date.now() - 12e4).toISOString(), codigo: 'MK-7K3Q9', titular: D.nombre || 'Ana Torres', saldo: D.saldo }])).slice(),
+      mb_solicitudes: () => (D.sol || (D.sol = [{ id: 12, nombre: 'Carlos Pérez', telefono: '593987654321', pagado: 200, creado: new Date(Date.now() - 6e5).toISOString(), tiene: false }])).slice(),
+      mb_solicitud_resolver: () => {
+        const q = (D.sol || []).find(x => x.id === a.p_id); if (!q) throw new Error('Solicitud no encontrada');
+        D.sol = D.sol.filter(x => x.id !== a.p_id);
+        if (!a.p_activar) return { estado: 'rechazada' };
+        const carga = this._carga(q.pagado);
+        D.saldo = carga; D.nombre = q.nombre; D.tel = q.telefono;
+        D.movs = [{ id: Date.now(), tipo: 'carga', monto: carga, detalle: 'Tarjeta nueva $' + q.pagado + ' + regalo $' + (carga - q.pagado), creado: new Date().toISOString(), local: loc(), cajero: 'Demo', anulado: false }];
+        return { renovada: false, token: tok, codigo: 'MK-7K3Q9', vence: '2027-09-24', saldo: carga, carga, pagado: q.pagado, nombre: q.nombre, telefono: q.telefono };
+      },
       mb_reserva_resolver: () => {
         const r = (D.res || []).find(x => x.id === a.p_id); if (!r) throw new Error('Pedido no encontrado');
         D.res = D.res.filter(x => x.id !== a.p_id);
@@ -831,6 +878,19 @@ class Component extends DCLogic {
 
       vHome: ready && v === 'home',
       hayReservas: s.reservas.length > 0, nReservas: s.reservas.length,
+      haySolicitudes: s.solicitudes.length > 0, nSolicitudes: s.solicitudes.length,
+      solicitudes: s.solicitudes.map(q => {
+        const busy = s.resBusy === 's' + q.id;
+        const t = String(q.telefono || '').replace(/^593/, '0');
+        const hora = (() => { try { return new Date(q.creado).toLocaleString('es-EC', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } })();
+        return {
+          nombre: q.nombre, pagaTxt: '$' + Number(q.pagado),
+          meta: [t, hora, 'Recibe $' + this._carga(Number(q.pagado)), q.tiene ? 'Ya tiene tarjeta: se recarga' : 'Tarjeta nueva'].join(' · '),
+          busy, activarTxt: busy ? 'Activando…' : 'Llegó · activar tarjeta',
+          activar: () => this._activarSolicitud(q, true),
+          rechazar: () => this._activarSolicitud(q, false)
+        };
+      }),
       resErr: s.resErr, hayResErr: !!s.resErr,
       reservas: s.reservas.map(r => {
         const hora = (() => { try { return new Date(r.creado).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } })();

@@ -54,37 +54,55 @@
           <p style="margin:0; font-weight:900; font-size:30px; line-height:.95; letter-spacing:-.02em; text-transform:uppercase; color:#111111">Por cada $100, te regalamos $50</p>
         </div>
         <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px">
-          <div style="background:#111111; color:#FFFFFF; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:4px">
-            <span style="align-self:flex-start; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:4px 8px; border-radius:6px">+$50 gratis</span>
-            <span style="font-size:13px; font-weight:700; color:#CFCFCF; margin-top:6px">Pagas $100</span>
-            <span style="font-weight:900; font-size:40px; line-height:.9; letter-spacing:-.03em">$150</span>
-            <span style="font-size:12px; font-weight:800; text-transform:uppercase; color:#CFCFCF">para consumir</span>
-          </div>
-          <div style="background:#111111; color:#FFFFFF; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:4px">
-            <span style="align-self:flex-start; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:4px 8px; border-radius:6px">+$100 gratis</span>
-            <span style="font-size:13px; font-weight:700; color:#CFCFCF; margin-top:6px">Pagas $200</span>
-            <span style="font-weight:900; font-size:40px; line-height:.9; letter-spacing:-.03em">$300</span>
-            <span style="font-size:12px; font-weight:800; text-transform:uppercase; color:#CFCFCF">para consumir</span>
-          </div>
-          <div style="background:#111111; color:#FFFFFF; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:4px">
-            <span style="align-self:flex-start; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; padding:4px 8px; border-radius:6px">+$150 gratis</span>
-            <span style="font-size:13px; font-weight:700; color:#CFCFCF; margin-top:6px">Pagas $300</span>
-            <span style="font-weight:900; font-size:40px; line-height:.9; letter-spacing:-.03em">$450</span>
-            <span style="font-size:12px; font-weight:800; text-transform:uppercase; color:#CFCFCF">para consumir</span>
-          </div>
-          <div style="background:#D9342C; color:#FFFFFF; border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:4px; box-shadow:5px 5px 0 #111111">
-            <span style="align-self:flex-start; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; background:#FFFFFF; color:#D9342C; padding:4px 8px; border-radius:6px">+$250 gratis</span>
-            <span style="font-size:13px; font-weight:700; color:#FFFFFF; margin-top:6px">Pagas $500</span>
-            <span style="font-weight:900; font-size:40px; line-height:.9; letter-spacing:-.03em">$750</span>
-            <span style="font-size:12px; font-weight:800; text-transform:uppercase; color:#FFFFFF">para consumir</span>
-          </div>
+          <sc-for list="{{ planes }}" as="p" hint-placeholder-count="4">
+            <button type="button" onClick="{{ p.pick }}" style="text-align:left; font:inherit; cursor:pointer; background:{{ p.bg }}; color:#FFFFFF; border:3px solid {{ p.borde }}; border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:4px; box-shadow:{{ p.sombra }}">
+              <span style="align-self:flex-start; font-size:12px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; background:{{ p.tagBg }}; color:{{ p.tagFg }}; padding:4px 8px; border-radius:6px">{{ p.regalo }}</span>
+              <span style="font-size:13px; font-weight:700; color:#E6E6E6; margin-top:6px">{{ p.paga }}</span>
+              <span style="font-weight:900; font-size:40px; line-height:.9; letter-spacing:-.03em">{{ p.recibe }}</span>
+              <span style="font-size:12px; font-weight:800; text-transform:uppercase; color:#E6E6E6">{{ p.pie }}</span>
+            </button>
+          </sc-for>
         </div>
         <p style="margin:0; font-size:14px; font-weight:600; line-height:1.45; color:#4A4A4A">Úsala en Mocka y MockaBox durante 12 meses desde tu última compra.</p>
-        <div style="display:flex; flex-direction:column; gap:8px">
-          <p style="margin:0; font-size:16px; font-weight:500; line-height:1.45"><strong>1.</strong> Pídela en caja, en cualquier local de Mocka o MockaBox.</p>
-          <p style="margin:0; font-size:16px; font-weight:500; line-height:1.45"><strong>2.</strong> Te enviamos el enlace a tu tarjeta con tu QR.</p>
-          <p style="margin:0; font-size:16px; font-weight:500; line-height:1.45"><strong>3.</strong> Muestra el QR al pagar y se descuenta de tu saldo.</p>
+
+        <div style="border-top:2px dashed #D9342C; padding-top:16px; display:flex; flex-direction:column; gap:12px">
+          <p style="margin:0; font-weight:900; font-size:24px; line-height:.95; letter-spacing:-.02em; text-transform:uppercase; color:#111111">Cómprala por transferencia</p>
+          <sc-if value="{{ sinPlan }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:0; font-size:15px; font-weight:600; color:#4A4A4A">Toca un plan de arriba para empezar.</p>
+          </sc-if>
+          <sc-if value="{{ conPlan }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:12px">
+              <div style="background:#111111; color:#FFFFFF; border-radius:10px; padding:16px; display:flex; flex-direction:column; gap:10px">
+                <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px">
+                  <span style="font-size:13px; font-weight:800; letter-spacing:.08em; text-transform:uppercase">Transfiere</span>
+                  <span style="font-weight:900; font-size:34px; line-height:1; letter-spacing:-.02em; color:#FF5A4E">{{ planPaga }}</span>
+                </div>
+                <div style="display:grid; grid-template-columns:auto minmax(0,1fr); gap:6px 14px; font-size:15px">
+                  <span style="color:#CFCFCF; font-weight:600">Banco</span><span style="font-weight:800">Banco Pichincha</span>
+                  <span style="color:#CFCFCF; font-weight:600">Cuenta</span><span style="font-weight:800">Ahorros · 6348265100</span>
+                  <span style="color:#CFCFCF; font-weight:600">Titular</span><span style="font-weight:800">Pablo José Mayorga Ramírez</span>
+                  <span style="color:#CFCFCF; font-weight:600">Cédula</span><span style="font-weight:800">1804307781</span>
+                </div>
+                <button type="button" onClick="{{ copiarCuenta }}" style="align-self:flex-start; font-size:13px; font-weight:900; text-transform:uppercase; letter-spacing:.04em; background:#FFFFFF; color:#111111; border:0; border-radius:8px; padding:10px 14px; min-height:44px">{{ copiarTxt }}</button>
+              </div>
+              <label style="display:flex; flex-direction:column; gap:6px">
+                <span style="font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase">Tu nombre y apellido</span>
+                <input value="{{ cNombre }}" onChange="{{ setCNombre }}" placeholder="Ej: Ana Torres" autocomplete="name" style="font-size:16px; padding:12px 14px; border:2px solid #111111; border-radius:8px; min-height:48px">
+              </label>
+              <label style="display:flex; flex-direction:column; gap:6px">
+                <span style="font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase">Tu WhatsApp</span>
+                <input value="{{ cTel }}" onChange="{{ setCTel }}" placeholder="099 123 4567" inputmode="tel" autocomplete="tel" style="font-size:16px; padding:12px 14px; border:2px solid #111111; border-radius:8px; min-height:48px">
+              </label>
+              <sc-if value="{{ hayCErr }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0; font-size:14px; font-weight:700; color:#D9342C; background:#FDECEA; border-radius:8px; padding:10px 12px">{{ cErr }}</p>
+              </sc-if>
+              <button type="button" onClick="{{ enviarSolicitud }}" disabled="{{ cBusy }}" style="font-size:16px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; background:#D9342C; color:#FFFFFF; border:0; border-radius:8px; padding:16px; min-height:52px; box-shadow:4px 4px 0 #111111">{{ cBoton }}</button>
+              <p style="margin:0; font-size:13px; font-weight:500; line-height:1.45; color:#4A4A4A">Se abre WhatsApp para que nos mandes la foto del comprobante. Cuando confirmemos la transferencia te enviamos el enlace a tu tarjeta con tu QR. Si no recibimos el pago en 24 horas, la solicitud se cancela.</p>
+            </div>
+          </sc-if>
         </div>
+
+        <p style="margin:0; font-size:15px; font-weight:700; line-height:1.45; color:#111111">¿Prefieres en efectivo? Pídela en caja, en cualquier local de Mocka o MockaBox.</p>
       </div>
     </sc-if>
 
@@ -168,7 +186,43 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;demo&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Modo&quot;},&quot;whatsapp&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;593998475412&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Conexión&quot;},&quot;supabaseUrl&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;https://tcvffnaqfavhhoijghbz.supabase.co&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Conexión&quot;},&quot;supabaseKey&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Conexión&quot;}}">
 class Component extends DCLogic {
-  state = { estado: 'cargando', t: null, data: null, err: '' };
+  state = { estado: 'cargando', t: null, data: null, err: '', plan: null, cNombre: '', cTel: '', cErr: '', cBusy: false, copiado: false };
+
+  enviarSolicitud = async () => {
+    const s = this.state;
+    const nombre = s.cNombre.trim().replace(/\s+/g, ' ');
+    const tel = s.cTel.replace(/[^0-9]/g, '');
+    if (!s.plan) return this.setState({ cErr: 'Elige un plan.' });
+    if (nombre.length < 3 || !/\s/.test(nombre)) return this.setState({ cErr: 'Escribe tu nombre y apellido.' });
+    if (!/^(0?9[0-9]{8}|5939[0-9]{8})$/.test(tel)) return this.setState({ cErr: 'Escribe un WhatsApp válido (099...).' });
+    this.setState({ cBusy: true, cErr: '' });
+    const demo = !!this.props.demo || /[?&]demo=1/.test(location.search);
+    try {
+      let r;
+      if (demo) { await new Promise(x => setTimeout(x, 400)); r = { id: 12 }; }
+      else {
+        const url = String(this.props.supabaseUrl || 'https://tcvffnaqfavhhoijghbz.supabase.co').replace(/\/+$/, '');
+        const key = String(this.props.supabaseKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjdmZmbmFxZmF2aGhvaWpnaGJ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAxODYwMDIsImV4cCI6MjEwNTc2MjAwMn0.s973uetbiqWyuUtrtgA3RtXkLEMn2g0sCkkCzT7QiDk');
+        const res = await fetch(url + '/rest/v1/rpc/mb_solicitar', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key, Authorization: 'Bearer ' + key }, body: JSON.stringify({ p_nombre: nombre, p_telefono: tel, p_pagado: s.plan }) });
+        r = await res.json().catch(() => null);
+        if (!res.ok) throw new Error((r && r.message) || 'No pudimos registrar tu solicitud.');
+      }
+      if (!r || r.error) { this.setState({ cBusy: false, cErr: (r && r.error) || 'No pudimos registrar tu solicitud.' }); return; }
+      const destino = String(this.props.whatsapp || '593998475412').replace(/[^0-9]/g, '');
+      const recibe = s.plan * 1.5;
+      const msg = 'Hola Mocka, transferí $' + s.plan + ' para la tarjeta de $' + recibe + '.\nSolicitud #' + r.id + '\nNombre: ' + nombre + '\nWhatsApp: ' + tel + '\nTe adjunto el comprobante.';
+      this.setState({ cBusy: false });
+      location.href = 'https://wa.me/' + destino + '?text=' + encodeURIComponent(msg);
+    } catch (e) {
+      this.setState({ cBusy: false, cErr: /fetch|network|load failed/i.test(e.message) ? 'Sin conexión. Revisa tu internet e intenta de nuevo.' : e.message });
+    }
+  };
+
+  copiarCuenta = () => {
+    const t = '6348265100';
+    const ok = () => { this.setState({ copiado: true }); clearTimeout(this._cp); this._cp = setTimeout(() => this.setState({ copiado: false }), 2000); };
+    try { navigator.clipboard.writeText(t).then(ok, ok); } catch (e) { ok(); }
+  };
 
   componentDidMount() {
     const demo = !!this.props.demo || /[?&]demo=1/.test(location.search);
@@ -250,6 +304,19 @@ class Component extends DCLogic {
     const qr = d ? this._qr(link) : '';
 
     return {
+      planes: [100, 200, 300, 500].map(p => { const on = s.plan === p; return {
+        paga: 'Pagas $' + p, recibe: '$' + (p * 1.5), regalo: '+$' + (p / 2) + ' gratis', pie: on ? 'Elegida ✓' : 'para consumir',
+        bg: on ? '#D9342C' : '#111111', borde: on ? '#111111' : '#111111', sombra: on ? '5px 5px 0 #111111' : 'none',
+        tagBg: on ? '#FFFFFF' : '#D9342C', tagFg: on ? '#D9342C' : '#FFFFFF',
+        pick: () => this.setState({ plan: p, cErr: '' }) }; }),
+      sinPlan: !s.plan, conPlan: !!s.plan, planPaga: s.plan ? '$' + s.plan + '.00' : '',
+      cNombre: s.cNombre, cTel: s.cTel, cErr: s.cErr, hayCErr: !!s.cErr, cBusy: s.cBusy,
+      setCNombre: (e) => this.setState({ cNombre: e.target.value, cErr: '' }),
+      setCTel: (e) => this.setState({ cTel: e.target.value, cErr: '' }),
+      cBoton: s.cBusy ? 'Enviando…' : 'Ya transferí · enviar comprobante',
+      enviarSolicitud: this.enviarSolicitud, copiarCuenta: this.copiarCuenta,
+      copiarTxt: s.copiado ? 'Copiado ✓' : 'Copiar número de cuenta',
+      
       cargando: s.estado === 'cargando',
       sinTarjeta: s.estado === 'sin' || s.estado === 'nohay' || s.estado === 'error',
       vacioTitulo: s.estado === 'nohay' ? 'No encontramos esta tarjeta' : s.estado === 'error' ? 'Sin conexión' : 'Tu tarjeta Mocka',
