@@ -1,0 +1,32 @@
+{
+  "id": "mocka-tarjeta",
+  "name": "Mocka · Mi tarjeta",
+  "short_name": "Mi tarjeta",
+  "description": "Tu saldo y tu QR para pagar en Mocka y MockaBox.",
+  "scope": "./tarjeta.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#D9342C",
+  "theme_color": "#D9342C",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "tarjeta-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "tarjeta-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "tarjeta-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
