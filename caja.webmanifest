@@ -1,0 +1,33 @@
+{
+  "id": "caja",
+  "name": "Caja Mocka",
+  "short_name": "Caja",
+  "description": "Panel de caja de Mocka.",
+  "start_url": "caja.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#D8342E",
+  "theme_color": "#D8342E",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "caja-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "caja-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "caja-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
