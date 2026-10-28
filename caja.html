@@ -310,6 +310,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     // preserve ordering (React before ReactDOM before Babel before text/babel).
     const doc = new DOMParser().parseFromString(template, 'text/html');
     document.documentElement.replaceWith(doc.documentElement);
+    (function(){var h=document.head,add=function(t,a){var e=document.createElement(t);for(var k in a)e.setAttribute(k,a[k]);h.appendChild(e)};
+      add('link',{rel:'manifest',href:'caja.webmanifest'});add('meta',{name:'theme-color',content:'#D8342E'});
+      add('link',{rel:'icon',type:'image/png',href:'caja-icon-192.png'});add('link',{rel:'apple-touch-icon',href:'caja-apple-touch-icon.png'});
+      add('meta',{name:'apple-mobile-web-app-capable',content:'yes'});add('meta',{name:'mobile-web-app-capable',content:'yes'});
+      add('meta',{name:'apple-mobile-web-app-title',content:'Caja'});})();
 
     // Resolve page-frame markers: mint this document's own blob for each
     // framed page — from local text when this is the root, otherwise by

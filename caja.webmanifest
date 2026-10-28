@@ -1,10 +1,10 @@
 {
-  "id": "caja",
+  "id": "caja.html",
   "name": "Caja Mocka",
   "short_name": "Caja",
   "description": "Panel de caja de Mocka.",
   "start_url": "caja.html",
-  "scope": "./",
+  "scope": "caja.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#D8342E",
